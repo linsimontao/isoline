@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // we are importing some of the beautiful semantic UI react components
-import { Segment, Search, Divider, Button } from "semantic-ui-react";
+import { Segment, Search, Divider, Button, Label } from "semantic-ui-react";
 
 // here are our first two actions, we will be adding them in the next step, bare with me!
 import {
@@ -120,11 +120,12 @@ class Control extends React.Component {
         <Segment style={segmentStyle}>
           <div>
             <span>
-              Isochrones powered by <strong>HERE Maps</strong>
+              Isoline routing
             </span>
           </div>
           <Divider />
           {/* they are tachyons css classes by the way..*/}
+          <Label size="small">{"Center"}</Label>
           <div className="flex justify-between items-center mt3">
             {/* more about the props can be read here https://react.semantic-ui.com/modules/search the most important part to mention here are our objects being fed to it. When a user types text into the input handleSearchChange is called. When the geocode API is called the variable loading will be set true to show the spinner (coming from state). The results are shown in a dropdown list (also coming from the state) and the value shown in the input is userTextInput (..also from state). */}
             <Search

@@ -5,7 +5,7 @@ import { Slider } from "react-semantic-ui-range";
 import { Label, Button, Divider } from "semantic-ui-react";
 
 // we need just one action in this component to update settings made
-import { updateSettings } from "../actions/actions";
+import { updateSettings, fetchHereIsochrones } from "../actions/actions";
 
 class Settings extends React.Component {
   static propTypes = {
@@ -16,12 +16,17 @@ class Settings extends React.Component {
   // dispatches the action
   updateSettings() {
     const { controls, dispatch } = this.props;
+    const settings = controls.settings;
 
     dispatch(
       updateSettings({
-        settings: controls.settings
+        settings: settings
       })
     );
+
+    if (settings.isochronesCenter.lat && settings.isochronesCenter.lng) {
+      dispatch(fetchHereIsochrones({ settings }));
+    }
   }
 
   // we are making settings directly in the controls.settings object which is being passed on to the updateSettings() function up top
@@ -31,20 +36,6 @@ class Settings extends React.Component {
     controls.settings[settingName] = setting;
 
     this.updateSettings();
-  }
-
-  // this looks complex but it isn't, we basically want to make sure the the interval settings maximum can never be greater than the range maximum
-  alignRangeInterval() {
-    const { controls } = this.props;
-
-    if (
-      controls.settings.range.value < controls.settings.interval.value ||
-      controls.settings.interval.value == ""
-    ) {
-      controls.settings.interval.value = controls.settings.range.value;
-    }
-
-    controls.settings.interval.max = controls.settings.range.value;
   }
 
   render() {
@@ -64,25 +55,11 @@ class Settings extends React.Component {
         // when the slider is moved, we want to update our settings and make sure the maximums align
         onChange: value => {
           controls.settings.range.value = value;
+          this.updateSettings();
+        }
+      }
+    };
 
-          this.alignRangeInterval();
-          this.updateSettings();
-        }
-      }
-    };
-    // same as above, just for the interval slider this time
-    const intervalSettings = {
-      settings: {
-        ...controls.settings.interval,
-        min: 1,
-        step: 1,
-        start: controls.settings.interval.value,
-        onChange: value => {
-          controls.settings.interval.value = value;
-          this.updateSettings();
-        }
-      }
-    };
     // we have different kinds of settings in here. The components should be quite self-explanatory. Whenever a button is clicked we call handleSettings() and this way pass on our setting through to our state.
     return (
       <div className="mt3">
@@ -139,7 +116,7 @@ class Settings extends React.Component {
           </Button.Group>
         </div>
         <Divider />
-        <Label size="small">{"Maximum range"}</Label>
+        <Label size="small">{"Range"}</Label>
         <div className="mt3">
           <Slider
             discrete
@@ -151,22 +128,6 @@ class Settings extends React.Component {
           <div className="mt2">
             <Label className="mt2" color="grey" size={"mini"}>
               {controls.settings.range.value + rangetype}
-            </Label>
-          </div>
-        </div>
-        <Divider />
-        <Label size="small">{"Interval step"}</Label>
-        <div className="mt3">
-          <Slider
-            discrete
-            color="grey"
-            value={controls.settings.interval.value}
-            inverted={false}
-            settings={intervalSettings.settings}
-          />
-          <div className="mt2">
-            <Label className="mt2" color="grey" size={"mini"}>
-              {controls.settings.interval.value + rangetype}
             </Label>
           </div>
         </div>

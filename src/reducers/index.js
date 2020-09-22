@@ -24,12 +24,8 @@ const initialIsochronesControlsState = {
   settings: {
     isochronesCenter: {},
     range: {
-      max: 500,
-      value: 60
-    },
-    interval: {
-      max: 60,
-      value: 10
+      max: 100,
+      value: 50
     },
     mode: "car",
     rangetype: "distance",

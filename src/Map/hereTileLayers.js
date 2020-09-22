@@ -28,11 +28,11 @@ HereTileLayers.HERE = L.TileLayer.extend({
 
     // 🍂option appId: String = ''
     // Required option. The `app_id` provided as part of the HERE credentials
-    appId: "",
+    appId: process.env.REACT_APP_HEREAPPID,
 
     // 🍂option appCode: String = ''
     // Required option. The `app_code` provided as part of the HERE credentials
-    appCode: ""
+    appCode: process.env.REACT_APP_HEREAPPCODE
   },
 
   initialize: function initialize(options) {
@@ -45,11 +45,6 @@ HereTileLayers.HERE = L.TileLayer.extend({
     if (L.Browser.retina) {
       options.tileResolution = 512;
     }
-
-    //    {Base URL}{Path}/{resource (tile type)}/{map id}/{scheme}/{zoom}/{column}/{row}/{size}/{format}
-    //    ?app_id={YOUR_APP_ID}
-    //    &app_code={YOUR_APP_CODE}
-    //    &{param}={value}
 
     var path =
       "/{resource}/2.1/{resource}/{mapId}/{scheme}/{z}/{x}/{y}/{tileResolution}/{format}?app_id={appId}&app_code={appCode}";

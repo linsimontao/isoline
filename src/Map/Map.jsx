@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import L from "leaflet";
 import PropTypes from "prop-types";
-import chroma from "chroma-js";
 
 import HereTileLayers from "./hereTileLayers";
 
@@ -14,8 +13,7 @@ const style = {
 
 // using the reduced.day map styles, have a look at the imported hereTileLayers for more
 const hereReducedDay = HereTileLayers.here({
-  appId: "jKco7gLGf0WWlvS5n2fl",
-  appCode: "HQnCztY23zh2xiTPCFiTMA",
+  apiKey: process.env.REACT_APP_APIKEY,
   scheme: "normal.day"
 });
 
@@ -53,30 +51,28 @@ class Map extends React.Component {
     if (isochrones.length > 0) {
       let cnt = 0;
 
-      const scaleHsl = chroma
-        .scale(["#f44242", "#f4be41", "#41f497"])
-        .mode("hsl")
-        .colors(isochrones.length);
-
+      var polygon;
+      
       for (const isochrone of isochrones) {
         for (const isochroneComponent of isochrone.component) {
-          L.polygon(
+          polygon = L.polygon(
             isochroneComponent.shape.map(function(coordString) {
               return coordString.split(",");
             }),
             {
-              fillColor: scaleHsl[cnt],
+              fillColor: "#f44242",
               weight: 2,
               opacity: 1,
               color: "white",
               pane: "isochronesPane"
             }
-          ).addTo(isochronesLayer);
+          )
+          polygon.addTo(isochronesLayer);
         }
         cnt += 1;
       }
-
-      this.map.fitBounds(isochronesLayer.getBounds());
+      console.log(polygon)
+      this.map.fitBounds(polygon.getBounds());
     }
   }
 
@@ -103,9 +99,6 @@ class Map extends React.Component {
           }
         )
         .openTooltip();
-
-      // set the map view
-      this.map.setView(isochronesCenter, 7);
     }
   }
 
@@ -136,17 +129,6 @@ class Map extends React.Component {
       })
       .addTo(this.map);
 
-    // and for the sake of advertising your company, you may add a logo to the map
-    const brand = L.control({
-      position: "bottomright"
-    });
-    brand.onAdd = function(map) {
-      var div = L.DomUtil.create("div", "brand");
-      div.innerHTML =
-        '<a href="https://gis.ops.com" target="_blank"><img src="http://104.199.51.11:8083/wp-content/uploads/2018/11/gisops.png" width="150px"></img></a>';
-      return div;
-    };
-    this.map.addControl(brand);
   }
 
   // don't forget to render it :-)

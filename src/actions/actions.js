@@ -1,6 +1,6 @@
-const hereAppCode = "iG30jgckMcTjw0dQ2Oz6";
-const hereAppId = "C9hOePXze0PKVvpCRdOfvA";
-const hereApiKey = "HeSLObU8H_kZrKyzYoETaH6Exf8hRVvFj7BIblkoie0";
+const hereAppCode = process.env.REACT_APP_HEREAPPCODE;
+const hereAppId = process.env.REACT_APP_HEREAPPID;
+const hereApiKey = process.env.REACT_APP_APIKEY;
 export const UPDATE_TEXTINPUT = "UPDATE_TEXTINPUT";
 export const RECEIVE_GEOCODE_RESULTS = "RECEIVE_GEOCODE_RESULTS";
 export const REQUEST_GEOCODE_RESULTS = "REQUEST_GEOCODE_RESULTS";
@@ -19,8 +19,6 @@ export const fetchHereGeocode = payload => dispatch => {
   //let url = new URL("https://geocoder.api.here.com/6.2/geocode.json"),
   let url = new URL("https://geocoder.ls.hereapi.com/6.2/geocode.json"),
     params = {
-      // app_id: hereAppId,
-      // app_code: hereAppCode,
       apiKey: hereApiKey,
       searchtext: payload.inputValue
     };
@@ -102,8 +100,6 @@ export const fetchHereIsochrones = payload => dispatch => {
       "https://isoline.route.ls.hereapi.com/routing/7.2/calculateisoline.json"
     ),
     params = {
-      // app_id: hereAppId,
-      // app_code: hereAppCode,
       apiKey: hereApiKey,
       ...isolineParameters
     };
@@ -149,31 +145,11 @@ const processIsolineSettings = settings => {
     settings.isochronesCenter.lat + "," + settings.isochronesCenter.lng;
 
   // seconds
-  const ranges = [];
   if (settings.rangetype === "time") {
-    let rangeInSeconds = settings.range.value * 60;
-    const intervalInSeconds = settings.interval.value * 60;
-
-    // to generate ranges!
-    while (rangeInSeconds > 0) {
-      ranges.push(rangeInSeconds);
-      rangeInSeconds -= intervalInSeconds;
-    }
-
-    isolineParameters.range = ranges.join(",");
-
+    isolineParameters.range = settings.range.value * 60;
     // meters
   } else if (settings.rangetype === "distance") {
-    let rangeInMeters = settings.range.value * 1000;
-    const intervalInMeters = settings.interval.value * 1000;
-
-    // to generate ranges!
-    while (rangeInMeters > 0) {
-      ranges.push(rangeInMeters);
-      rangeInMeters -= intervalInMeters;
-    }
-
-    isolineParameters.range = ranges.join(",");
+    isolineParameters.range = settings.range.value * 1000;
   }
   return isolineParameters;
 };
